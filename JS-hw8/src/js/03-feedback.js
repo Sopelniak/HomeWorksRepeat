@@ -1,3 +1,5 @@
+import throttle from 'lodash.throttle';
+
 const formEl = document.querySelector('form.feedback-form');
 
 let objToLS = {
@@ -5,7 +7,7 @@ let objToLS = {
   message: '',
 };
 
-formEl.addEventListener('input', onInput);
+formEl.addEventListener('input', throttle(onInput, 500));
 formEl.addEventListener('submit', onSubmit);
 
 scanLS();
