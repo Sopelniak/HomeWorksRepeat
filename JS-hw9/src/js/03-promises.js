@@ -13,14 +13,16 @@ function onFormSubmit(e) {
   let delayForPromise = Number(delay.value);
 
   for (let i = 1; i <= amount.value; i++) {
-    createPromise(i, delayForPromise);
+    createPromise(i, delayForPromise)
+      .then(response => Notify.success(response))
+      .catch(e => Notify.failure(e));
     delayForPromise += Number(step.value);
   }
 }
 
 function createPromise(position, delay) {
   const shouldResolve = Math.random() > 0.3;
-  const promise = new Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => {
     setTimeout(() => {
       if (shouldResolve) {
         resolve(`✅ Fulfilled promise ${position} in ${delay}ms`);
@@ -30,7 +32,7 @@ function createPromise(position, delay) {
     }, delay);
   });
 
-  promise
-    .then(response => Notify.success(response))
-    .catch(e => Notify.failure(e));
+  // promise
+  //   .then(response => Notify.success(response))
+  //   .catch(e => Notify.failure(e));
 }
