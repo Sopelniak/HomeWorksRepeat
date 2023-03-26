@@ -12,12 +12,13 @@ const DEBOUNCE_DELAY = 300;
 searchBoxEl.addEventListener('input', debounce(onInput, DEBOUNCE_DELAY));
 
 function onInput(e) {
-  if (e.target.value === '') {
+  const name = e.target.value.trim();
+  if (name === '') {
     countryListEl.innerHTML = '';
     countryInfoEl.innerHTML = '';
     return;
   }
-  fetchCountries(e.target.value.trim())
+  fetchCountries(name)
     .then(data => {
       if (data.length > 10) {
         countryListEl.innerHTML = '';
@@ -36,18 +37,17 @@ function onInput(e) {
       }
     })
     .catch(e => {
-      console.log(e);
-      Notify.failure('Oops, there is no country with that name');
+      Notify.failure(e.message);
     });
 }
 
 function renderCountryList(data) {
   const markup = data
     .map(
-      country => `
+      ({ name, flags }) => `
             <li>
-              <img src=${country.flags.svg} alt="flag" width="40">
-              <span>${country.name.official}</span>
+              <img src=${flags.svg} alt="flag" width="40">
+              <span>${name.official}</span>
             </li>`
     )
     .join('');
@@ -55,17 +55,15 @@ function renderCountryList(data) {
 }
 
 function renderCountryInfo(data) {
-  const markup = data
-    .map(
-      country => `
+  const markup = data.map(
+    ({ flags, name, capital, population, languages }) => `
             <div class="country-name">
-              <img src=${country.flags.svg} alt="flag" width="60"/>
-              <h1>${country.name.official}</h1>
+              <img src=${flags.svg} alt="flag" width="60"/>
+              <h1>${name.official}</h1>
             </div>
-            <p class="info">Capital: ${country.capital}</p>
-            <p class="info">Population: ${country.population}</p>
-            <p class="info">Languages: ${Object.values(country.languages)}</p>`
-    )
-    .join('');
+            <p class="info">Capital: ${capital}</p>
+            <p class="info">Population: ${population}</p>
+            <p class="info">Languages: ${Object.values(languages)}</p>`
+  );
   countryInfoEl.innerHTML = markup;
 }
